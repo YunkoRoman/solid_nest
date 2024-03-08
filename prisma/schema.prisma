@@ -1,0 +1,42 @@
+// https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id           Int          @id @default(autoincrement())
+  name         String       @unique
+  manufacturer String
+  price        Int
+  image        String
+  UPC          String
+  DIN          String
+  NPN          String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  orders       Order[]      @relation("ProductOrders")
+  ingredients  Ingredient[]
+}
+
+model Ingredient {
+  id        Int      @id @default(autoincrement())
+  product   Product  @relation(fields: [productId], references: [id])
+  productId Int
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  orderId    Int       @id @default(autoincrement())
+  products   Product[] @relation("ProductOrders")
+  totalPrice Int       @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
